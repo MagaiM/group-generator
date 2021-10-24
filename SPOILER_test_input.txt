@@ -1,0 +1,26 @@
+H, Y
+H, S
+H, X
+H, G
+H, E
+H, B
+Y, U
+Y, X
+Y, G
+Y, E
+Y, B
+U, S
+U, X
+U, G
+U, E
+U, B
+S, X
+S, G
+S, E
+S, B
+X, B
+G, E
+G, B
+E, B
+H, U, Y, S
+X, E, B, U
