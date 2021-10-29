@@ -26,7 +26,8 @@ def export_possible_groups(possible_goups, output=['output.txt']):
                 #     all_groups.append(group)
                 # f.write('\n'.join(all_groups))
     else:
-        print("Not possible to form groups!")
+        with open('output.txt', 'w') as f:
+            f.write("Not possible to form groups!")
 
 
 # TODO should rename some variable to make it more readable!
@@ -72,65 +73,42 @@ def get_unpaird_people(have_been_together_with, every_one):
 
 
 # TODO fix this crap.
-def get_possible_goups(unpaird_people, group_size, every_one):
-    possible_groups = []
-    #                                     names                                                          names
-    possible_num = math.factorial(len(every_one)) / (math.factorial(group_size) * math.factorial(len(every_one) - group_size))      #  n! / (k! * (n-k)!)
+def get_possible_goups(unpaird_people, group_size):
+    unpaired_groups = []
+    for key in unpaird_people:
+        current_group = [key]
+        for value in unpaird_people[key]:
+            current_group.append(value)
+        unpaired_groups.append(current_group)
+    result = []
+    for every_one in unpaired_groups:
+        #  n! / (k! * (n-k)!)
+        try:
+            possible_num = math.factorial(len(every_one)) / (math.factorial(group_size) * math.factorial(len(every_one) - group_size))
+            possible_groups = []
+        except Exception:
+            continue
 
-    while len(possible_groups) != possible_num:
-        temp = []
-        for i in range(group_size):
-            while True:
-                rand = random.choice(every_one)
-                if rand not in temp:
-                    break
-            temp.append(rand)
-        if sorted(temp) not in possible_groups:
-            possible_groups.append(sorted(temp))
+        while len(possible_groups) != possible_num:
+            temp = []
+            for i in range(group_size):
+                while True:
+                    rand = random.choice(every_one)
+                    if rand not in temp:
+                        break
+                temp.append(rand)
+            if sorted(temp) not in possible_groups:
+                possible_groups.append(sorted(temp))
 
-    final = []
-
-    for group in possible_groups:
-        if sorted(group) not in final and every_one[0] in group:
-            final.append(sorted(group))
-
-    return possible_groups
-    # for person in unpaird_people:
-    #     possible_goup = []
-    #     if unpaird_people[person] != []:
-    #         if person not in possible_goup:
-    #             possible_goup.append(person)
-    #             if len(possible_goup) <= group_size:
-    #                 for i in range(len(unpaird_people[person])):
-    #                     if unpaird_people[person][i] not in possible_goup:
-    #                         possible_goup.append(unpaird_people[person][i])
-                    # all_group_comp = []
-                    # for i in range(len(possible_goup)):
-                    #     current_comp = [possible_goup[i]]
-                    #     for j in range(len(possible_goup)):
-                    #         if possible_goup[j] != possible_goup[i]:
-
-                    #             while len(current_comp) < group_size:
-                    #                 if possible_goup[j] not in current_comp:
-                    #                     current_comp.append(possible_goup[j])
-                    #                 all_group_comp.append(possible_goup[j])
-
-    #     if possible_goup != []:
-    #         if never_been_together == []:
-    #             never_been_together.append(sorted(possible_goup))
-    #         else:
-    #             for i in range(len(never_been_together)):
-    #                 if sorted(possible_goup) not in never_been_together:
-    #                     never_been_together.append(sorted(possible_goup))
-    # # for person in unpaird_people:
-    # #     possible_goup = []
-    # #     if unpaird_people[person] != []:
-    # #         possible_goup.append(person)
-    # #         group_mate = []
-    #         # for
-    # for group in never_been_together:
-    #     if len(group) == group_size:
-    #         possible_goups.append(group)
+        final = []
+        # for i in range(len(every_one)):
+        for group in possible_groups:
+            if sorted(group) not in final and every_one[0] in group:
+                final.append(sorted(group))
+        for comp in final:
+            if sorted(comp) not in result:
+                result.append(sorted(comp))
+    return result
 
 
 def export_file_names(possible_goups):
@@ -156,7 +134,7 @@ def read_and_get_prev_group_comps(file='input.txt'):
 def generate_groups(file, group_size):
     have_been_together_with, every_one = read_and_get_prev_group_comps(file)
     unpaird_people = get_unpaird_people(have_been_together_with, every_one)
-    possible_goups = get_possible_goups(unpaird_people, group_size, every_one)  # insert here?
+    possible_goups = get_possible_goups(unpaird_people, group_size)  # insert here?
     return possible_goups
 
 
@@ -169,13 +147,26 @@ def get_group_size():
     return int(group_size)
 
 
+def generate_group_sets(possible_goups):
+    sets = []
+    for i in range(len(possible_goups)):
+        sett = []
+        for person in possible_goups[i]:
+            # if person not in sett:
+            if not any(person in x for x in sett):
+                sett.append(possible_goups[i])
+        print(sett)
+    return sets
+
+
 def main():
     # file = 'test_.txt'
     file = 'input.txt'
     if check_file_name(file):
         group_size = get_group_size()
         possible_goups = generate_groups(file, group_size)
-        output = export_file_names(possible_goups)
+        possible_goup_sets = generate_group_sets(possible_goups)
+        output = export_file_names(possible_goup_sets)
         export_possible_groups(possible_goups, output)
     else:
         print('Invalid ')
