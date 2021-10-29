@@ -1,5 +1,7 @@
 import os.path
 import random
+import math
+
 
 def check_file_name(file):
     return os.path.isfile(file)
@@ -70,18 +72,38 @@ def get_unpaird_people(have_been_together_with, every_one):
 
 
 # TODO fix this crap.
-def get_possible_goups(unpaird_people, group_size):
-    possible_goups = []
-    never_been_together = []
-    for person in unpaird_people:
-        possible_goup = []
-        if unpaird_people[person] != []:
-            if person not in possible_goup:
-                possible_goup.append(person)
-                if len(possible_goup) <= group_size:
-                    for i in range(len(unpaird_people[person])):
-                        if unpaird_people[person][i] not in possible_goup:
-                            possible_goup.append(unpaird_people[person][i])
+def get_possible_goups(unpaird_people, group_size, every_one):
+    possible_groups = []
+    #                                     names                                                          names
+    possible_num = math.factorial(len(every_one)) / (math.factorial(group_size) * math.factorial(len(every_one) - group_size))      #  n! / (k! * (n-k)!)
+
+    while len(possible_groups) != possible_num:
+        temp = []
+        for i in range(group_size):
+            while True:
+                rand = random.choice(every_one)
+                if rand not in temp:
+                    break
+            temp.append(rand)
+        if sorted(temp) not in possible_groups:
+            possible_groups.append(sorted(temp))
+
+    final = []
+
+    for group in possible_groups:
+        if sorted(group) not in final and every_one[0] in group:
+            final.append(sorted(group))
+
+    return possible_groups
+    # for person in unpaird_people:
+    #     possible_goup = []
+    #     if unpaird_people[person] != []:
+    #         if person not in possible_goup:
+    #             possible_goup.append(person)
+    #             if len(possible_goup) <= group_size:
+    #                 for i in range(len(unpaird_people[person])):
+    #                     if unpaird_people[person][i] not in possible_goup:
+    #                         possible_goup.append(unpaird_people[person][i])
                     # all_group_comp = []
                     # for i in range(len(possible_goup)):
                     #     current_comp = [possible_goup[i]]
@@ -93,23 +115,22 @@ def get_possible_goups(unpaird_people, group_size):
                     #                     current_comp.append(possible_goup[j])
                     #                 all_group_comp.append(possible_goup[j])
 
-        if possible_goup != []:
-            if never_been_together == []:
-                never_been_together.append(sorted(possible_goup))
-            else:
-                for i in range(len(never_been_together)):
-                    if sorted(possible_goup) not in never_been_together:
-                        never_been_together.append(sorted(possible_goup))
-    # for person in unpaird_people:
-    #     possible_goup = []
-    #     if unpaird_people[person] != []:
-    #         possible_goup.append(person)
-    #         group_mate = []
-            # for 
-    for group in never_been_together:
-        if len(group) == group_size:
-            possible_goups.append(group)
-    return possible_goups
+    #     if possible_goup != []:
+    #         if never_been_together == []:
+    #             never_been_together.append(sorted(possible_goup))
+    #         else:
+    #             for i in range(len(never_been_together)):
+    #                 if sorted(possible_goup) not in never_been_together:
+    #                     never_been_together.append(sorted(possible_goup))
+    # # for person in unpaird_people:
+    # #     possible_goup = []
+    # #     if unpaird_people[person] != []:
+    # #         possible_goup.append(person)
+    # #         group_mate = []
+    #         # for
+    # for group in never_been_together:
+    #     if len(group) == group_size:
+    #         possible_goups.append(group)
 
 
 def export_file_names(possible_goups):
@@ -135,7 +156,7 @@ def read_and_get_prev_group_comps(file='input.txt'):
 def generate_groups(file, group_size):
     have_been_together_with, every_one = read_and_get_prev_group_comps(file)
     unpaird_people = get_unpaird_people(have_been_together_with, every_one)
-    possible_goups = get_possible_goups(unpaird_people, group_size)
+    possible_goups = get_possible_goups(unpaird_people, group_size, every_one)  # insert here?
     return possible_goups
 
 
@@ -164,14 +185,7 @@ if __name__ == '__main__':
     main()
 
 
-
-
 """ Kombinatorikai képlettel randomizáló módszerrel kiválasztja az összes ismétlés nélküli kombinációt egy listából """
-
-
-# from os import name
-# import random
-# import math
 
 
 # group_size = 5
